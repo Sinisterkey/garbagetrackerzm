@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell, EmptyState, PageHeader } from "@/components/AppShell";
@@ -57,7 +57,7 @@ function NotificationsPage() {
               <div className="flex gap-2">
                 {n.link && (
                   <Button asChild size="sm" variant="outline">
-                    <Link to={n.link}>Open</Link>
+                    <a href={n.link}>Open</a>
                   </Button>
                 )}
                 {!n.read_at && (
