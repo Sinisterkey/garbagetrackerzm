@@ -185,7 +185,10 @@ export const updateReport = createServerFn({ method: "POST" })
     if (data.priorityId !== undefined) patch.priority_id = data.priorityId;
     if (data.size !== undefined) patch.size = data.size;
     if (data.urgent !== undefined) patch.urgent = data.urgent;
-    const { error } = await context.supabase.from("reports").update(patch).eq("id", data.reportId);
+    const { error } = await context.supabase
+      .from("reports")
+      .update(patch as never)
+      .eq("id", data.reportId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -258,7 +261,10 @@ export const transitionReport = createServerFn({ method: "POST" })
     if (data.to === "completed") patch.completed_at = now;
     if (data.to === "verified") patch.verified_at = now;
 
-    const { error: uErr } = await context.supabase.from("reports").update(patch).eq("id", data.reportId);
+    const { error: uErr } = await context.supabase
+      .from("reports")
+      .update(patch as never)
+      .eq("id", data.reportId);
     if (uErr) throw new Error(uErr.message);
 
     if (data.completionPhotoPaths?.length) {

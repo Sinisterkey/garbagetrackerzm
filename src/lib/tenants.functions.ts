@@ -152,7 +152,10 @@ export const updateTenant = createServerFn({ method: "POST" })
     if (data.centerLng !== undefined) patch.center_lng = data.centerLng;
     if (data.defaultZoom !== undefined) patch.default_zoom = data.defaultZoom;
     if (data.workingHours !== undefined) patch.working_hours = data.workingHours;
-    const { error } = await context.supabase.from("tenants").update(patch).eq("id", data.tenantId);
+    const { error } = await context.supabase
+      .from("tenants")
+      .update(patch as never)
+      .eq("id", data.tenantId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
