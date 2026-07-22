@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Truck } from "lucide-react";
+import { BrandMark } from "@/components/BrandMark";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
@@ -46,11 +46,11 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-primary/5 to-background p-4">
       <div className="w-full max-w-md">
-        <div className="mb-6 flex items-center justify-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Truck className="h-5 w-5" />
+        <div className="mb-6 flex items-center justify-center gap-2.5">
+          <div className="h-10 w-10 text-primary">
+            <BrandMark />
           </div>
-          <span className="text-lg font-bold">Garbage Tracker</span>
+          <span className="text-lg font-bold tracking-tight">Garbage Tracker</span>
         </div>
         <Card>
           <CardHeader>

@@ -2,14 +2,14 @@ import { Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import {
   Bell,
-  LayoutDashboard,
-  ListTodo,
+  Gauge,
+  ClipboardList,
   LogOut,
-  Map,
-  PlusCircle,
-  Settings,
-  Truck,
-  UserCog,
+  MapPinned,
+  Route as RouteIcon,
+  PencilLine,
+  SlidersHorizontal,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,18 +19,19 @@ import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { AppRole } from "@/lib/rbac";
+import { BrandMark } from "./BrandMark";
 
-type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; roles: AppRole[] };
+type NavItem = { to: string; label: string; icon: typeof Gauge; roles: AppRole[] };
 
 const NAV: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["resident", "administrator", "supervisor", "super_admin"] },
-  { to: "/reports/new", label: "New report", icon: PlusCircle, roles: ["resident", "administrator", "supervisor", "super_admin"] },
-  { to: "/jobs", label: "My jobs", icon: Truck, roles: ["collector"] },
-  { to: "/map", label: "Live map", icon: Map, roles: ["collector", "administrator", "supervisor", "super_admin"] },
-  { to: "/queue", label: "Dispatch", icon: ListTodo, roles: ["administrator", "supervisor", "super_admin"] },
-  { to: "/admin", label: "Administration", icon: UserCog, roles: ["administrator", "supervisor", "super_admin"] },
+  { to: "/dashboard", label: "Overview", icon: Gauge, roles: ["resident", "administrator", "supervisor", "super_admin"] },
+  { to: "/reports/new", label: "New report", icon: PencilLine, roles: ["resident", "administrator", "supervisor", "super_admin"] },
+  { to: "/jobs", label: "My route", icon: RouteIcon, roles: ["collector"] },
+  { to: "/map", label: "Live map", icon: MapPinned, roles: ["collector", "administrator", "supervisor", "super_admin"] },
+  { to: "/queue", label: "Dispatch", icon: ClipboardList, roles: ["administrator", "supervisor", "super_admin"] },
+  { to: "/admin", label: "Administration", icon: ShieldCheck, roles: ["administrator", "supervisor", "super_admin"] },
   { to: "/notifications", label: "Notifications", icon: Bell, roles: ["resident", "collector", "administrator", "supervisor", "super_admin"] },
-  { to: "/settings", label: "Settings", icon: Settings, roles: ["resident", "collector", "administrator", "supervisor", "super_admin"] },
+  { to: "/settings", label: "Settings", icon: SlidersHorizontal, roles: ["resident", "collector", "administrator", "supervisor", "super_admin"] },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -52,9 +53,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-[260px_1fr] bg-muted/40">
       <aside className="hidden md:flex md:flex-col border-r bg-background">
-        <div className="flex h-16 items-center gap-2 border-b px-4">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Truck className="h-5 w-5" />
+        <div className="flex h-16 items-center gap-2.5 border-b px-4">
+          <div className="flex h-9 w-9 items-center justify-center text-primary">
+            <BrandMark />
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-bold">Garbage Tracker</span>
@@ -74,13 +75,19 @@ export function AppShell({ children }: { children: ReactNode }) {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   active
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-accent hover:text-foreground",
                 )}
               >
-                <n.icon className="h-4 w-4" />
+                <n.icon
+                  strokeWidth={1.6}
+                  className={cn(
+                    "h-[18px] w-[18px] transition-colors",
+                    active ? "text-primary" : "text-muted-foreground/80 group-hover:text-foreground",
+                  )}
+                />
                 {n.label}
               </Link>
             );
@@ -88,7 +95,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </nav>
         <div className="border-t p-3">
           <Button variant="ghost" className="w-full justify-start gap-2" onClick={signOut}>
-            <LogOut className="h-4 w-4" /> Sign out
+            <LogOut strokeWidth={1.6} className="h-[18px] w-[18px]" /> Sign out
           </Button>
         </div>
       </aside>
@@ -104,11 +111,11 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link to="/notifications">
-                <Bell className="h-4 w-4" />
+                <Bell strokeWidth={1.6} className="h-[18px] w-[18px]" />
               </Link>
             </Button>
             <Button variant="ghost" size="icon" className="md:hidden" onClick={signOut}>
-              <LogOut className="h-4 w-4" />
+              <LogOut strokeWidth={1.6} className="h-[18px] w-[18px]" />
             </Button>
           </div>
         </header>
@@ -151,8 +158,8 @@ export function EmptyState({
 }) {
   return (
     <div className="flex flex-col items-center justify-center rounded-xl border border-dashed bg-background p-10 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-        <Icon className="h-6 w-6" />
+      <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/20 bg-primary/5 text-primary">
+        <Icon strokeWidth={1.5} className="h-5 w-5" />
       </div>
       <h3 className="mt-4 text-base font-semibold">{title}</h3>
       {description && <p className="mt-1 max-w-md text-sm text-muted-foreground">{description}</p>}
