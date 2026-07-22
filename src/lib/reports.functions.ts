@@ -48,6 +48,18 @@ export const createReport = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
+    // Only residents may submit reports
+    const { data: memberRows } = await context.supabase
+      .from("tenant_members")
+      .select("role")
+      .eq("tenant_id", data.tenantId)
+      .eq("user_id", context.userId)
+      .eq("active", true);
+    const roles = new Set((memberRows ?? []).map((r) => r.role as string));
+    if (!roles.has("resident")) {
+      throw new Error("Only residents can submit reports");
+    }
+
     // compute SLA deadline if priority provided
     let slaDeadline: string | null = null;
     if (data.priorityId) {
