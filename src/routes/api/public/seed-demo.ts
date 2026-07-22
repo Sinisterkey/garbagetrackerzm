@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-type Role = "resident" | "collector" | "supervisor" | "administrator";
+type Role = "resident" | "collector" | "administrator";
 
 const DEMO_USERS: { email: string; password: string; role: Role; full_name: string }[] = [
   { email: "resident@demo.garbagetracker.app", password: "DemoResident!234", role: "resident", full_name: "Rita Resident" },
   { email: "collector@demo.garbagetracker.app", password: "DemoCollector!234", role: "collector", full_name: "Colin Collector" },
-  { email: "supervisor@demo.garbagetracker.app", password: "DemoSupervisor!234", role: "supervisor", full_name: "Sam Supervisor" },
   { email: "admin@demo.garbagetracker.app", password: "DemoAdmin!234", role: "administrator", full_name: "Ada Administrator" },
 ];
 

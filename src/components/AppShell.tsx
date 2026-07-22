@@ -23,14 +23,14 @@ import type { AppRole } from "@/lib/rbac";
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; roles: AppRole[] };
 
 const NAV: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["resident", "collector", "supervisor", "administrator", "super_admin"] },
-  { to: "/reports/new", label: "New report", icon: PlusCircle, roles: ["resident", "supervisor", "administrator", "super_admin"] },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, roles: ["resident", "administrator", "supervisor", "super_admin"] },
+  { to: "/reports/new", label: "New report", icon: PlusCircle, roles: ["resident", "administrator", "supervisor", "super_admin"] },
   { to: "/jobs", label: "My jobs", icon: Truck, roles: ["collector"] },
-  { to: "/queue", label: "Dispatch", icon: ListTodo, roles: ["supervisor", "administrator", "super_admin"] },
-  { to: "/map", label: "Live map", icon: Map, roles: ["collector", "supervisor", "administrator", "super_admin"] },
-  { to: "/admin", label: "Administration", icon: UserCog, roles: ["administrator", "super_admin"] },
-  { to: "/notifications", label: "Notifications", icon: Bell, roles: ["resident", "collector", "supervisor", "administrator", "super_admin"] },
-  { to: "/settings", label: "Settings", icon: Settings, roles: ["resident", "collector", "supervisor", "administrator", "super_admin"] },
+  { to: "/map", label: "Live map", icon: Map, roles: ["collector", "administrator", "supervisor", "super_admin"] },
+  { to: "/queue", label: "Dispatch", icon: ListTodo, roles: ["administrator", "supervisor", "super_admin"] },
+  { to: "/admin", label: "Administration", icon: UserCog, roles: ["administrator", "supervisor", "super_admin"] },
+  { to: "/notifications", label: "Notifications", icon: Bell, roles: ["resident", "collector", "administrator", "supervisor", "super_admin"] },
+  { to: "/settings", label: "Settings", icon: Settings, roles: ["resident", "collector", "administrator", "supervisor", "super_admin"] },
 ];
 
 export function AppShell({ children }: { children: ReactNode }) {

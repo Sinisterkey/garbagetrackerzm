@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AppShell, EmptyState, PageHeader } from "@/components/AppShell";
@@ -9,15 +10,30 @@ import { listReports } from "@/lib/reports.functions";
 import { getDashboardStats } from "@/lib/analytics.functions";
 import { StatusBadge } from "@/components/StatusBadge";
 import { relativeTime } from "@/lib/format";
-import { Building2, PlusCircle, TrendingUp } from "lucide-react";
+import {
+  Building2,
+  CalendarDays,
+  CheckCircle2,
+  Clock,
+  Inbox,
+  PlusCircle,
+  TrendingUp,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
 });
 
 function Dashboard() {
+  const nav = useNavigate();
   const { current, loading } = useCurrentTenant();
   const { data: role } = useMyRole(current?.tenant.id);
+
+  useEffect(() => {
+    if (role === "collector") nav({ to: "/jobs", replace: true });
+  }, [role, nav]);
+
   const listFn = useServerFn(listReports);
   const statsFn = useServerFn(getDashboardStats);
 
@@ -74,10 +90,10 @@ function Dashboard() {
       />
 
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Today" value={stats.data?.today ?? "—"} />
-        <StatCard label="Open" value={stats.data?.pending ?? "—"} />
-        <StatCard label="Completed (30d)" value={stats.data?.completed30d ?? "—"} />
-        <StatCard label="Avg response" value={stats.data ? `${stats.data.avgResponseHours}h` : "—"} />
+        <StatCard label="Today" value={stats.data?.today ?? "—"} icon={CalendarDays} tone="bg-blue-500/10 text-blue-600" />
+        <StatCard label="Open" value={stats.data?.pending ?? "—"} icon={Inbox} tone="bg-amber-500/10 text-amber-600" />
+        <StatCard label="Completed (30d)" value={stats.data?.completed30d ?? "—"} icon={CheckCircle2} tone="bg-emerald-500/10 text-emerald-600" />
+        <StatCard label="Avg response" value={stats.data ? `${stats.data.avgResponseHours}h` : "—"} icon={Clock} tone="bg-violet-500/10 text-violet-600" />
       </div>
 
       <Card className="mt-6">
@@ -108,13 +124,26 @@ function Dashboard() {
   );
 }
 
-function StatCard({ label, value }: { label: string; value: number | string }) {
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  tone,
+}: {
+  label: string;
+  value: number | string;
+  icon: LucideIcon;
+  tone: string;
+}) {
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
         <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {label}
         </CardTitle>
+        <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
+          <Icon className="h-4 w-4" />
+        </div>
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
