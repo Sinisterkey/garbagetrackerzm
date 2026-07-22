@@ -81,11 +81,13 @@ function Dashboard() {
         title={`Welcome to ${current.tenant.name}`}
         description="Live overview of reports and operations."
         actions={
-          <Button asChild>
-            <Link to="/reports/new">
-              <PencilLine strokeWidth={1.7} className="mr-2 h-4 w-4" /> New report
-            </Link>
-          </Button>
+          role === "resident" ? (
+            <Button asChild>
+              <Link to="/reports/new">
+                <PencilLine strokeWidth={1.7} className="mr-2 h-4 w-4" /> New report
+              </Link>
+            </Button>
+          ) : undefined
         }
       />
 
