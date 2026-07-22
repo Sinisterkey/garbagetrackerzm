@@ -7,18 +7,21 @@ export function ReportMap({
   center,
   zoom = 13,
   markers = [],
+  self,
   onClick,
   height = 420,
 }: {
   center: { lat: number; lng: number };
   zoom?: number;
   markers?: Marker[];
+  self?: { lat: number; lng: number; accuracy?: number } | null;
   onClick?: (pos: { lat: number; lng: number }) => void;
   height?: number;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const layerRef = useRef<any>(null);
+  const selfLayerRef = useRef<any>(null);
 
   useEffect(() => {
     let disposed = false;
@@ -53,12 +56,36 @@ export function ReportMap({
         const marker = L.marker([m.lat, m.lng], { icon }).addTo(layerRef.current);
         if (m.title) marker.bindTooltip(m.title, { direction: "top" });
       }
+
+      if (!selfLayerRef.current) selfLayerRef.current = L.layerGroup().addTo(mapRef.current);
+      selfLayerRef.current.clearLayers();
+      if (self) {
+        const html = `
+          <div style="position:relative;width:18px;height:18px;">
+            <span style="position:absolute;inset:-6px;border-radius:9999px;background:#2563eb33;animation:gt-pulse 1.8s ease-out infinite;"></span>
+            <span style="position:absolute;inset:0;border-radius:9999px;background:#2563eb;border:2px solid white;box-shadow:0 0 0 2px #2563eb55;"></span>
+          </div>
+          <style>@keyframes gt-pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}</style>`;
+        const icon = L.divIcon({ className: "", html, iconSize: [18, 18], iconAnchor: [9, 9] });
+        L.marker([self.lat, self.lng], { icon, zIndexOffset: 1000 })
+          .addTo(selfLayerRef.current)
+          .bindTooltip("You are here", { direction: "top" });
+        if (typeof self.accuracy === "number" && self.accuracy > 0) {
+          L.circle([self.lat, self.lng], {
+            radius: self.accuracy,
+            color: "#2563eb",
+            weight: 1,
+            fillColor: "#2563eb",
+            fillOpacity: 0.08,
+          }).addTo(selfLayerRef.current);
+        }
+      }
     })();
     return () => {
       disposed = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [center.lat, center.lng, zoom, JSON.stringify(markers)]);
+  }, [center.lat, center.lng, zoom, JSON.stringify(markers), self?.lat, self?.lng, self?.accuracy]);
 
   useEffect(() => {
     return () => {
