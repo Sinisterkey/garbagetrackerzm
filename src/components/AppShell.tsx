@@ -25,7 +25,7 @@ type NavItem = { to: string; label: string; icon: typeof Gauge; roles: AppRole[]
 
 const NAV: NavItem[] = [
   { to: "/dashboard", label: "Overview", icon: Gauge, roles: ["resident", "administrator", "supervisor", "super_admin"] },
-  { to: "/reports/new", label: "New report", icon: PencilLine, roles: ["resident", "administrator", "supervisor", "super_admin"] },
+  { to: "/reports/new", label: "New report", icon: PencilLine, roles: ["resident"] },
   { to: "/jobs", label: "My route", icon: RouteIcon, roles: ["collector"] },
   { to: "/map", label: "Live map", icon: MapPinned, roles: ["collector", "administrator", "supervisor", "super_admin"] },
   { to: "/queue", label: "Dispatch", icon: ClipboardList, roles: ["administrator", "supervisor", "super_admin"] },
