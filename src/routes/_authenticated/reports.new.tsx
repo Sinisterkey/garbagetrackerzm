@@ -18,7 +18,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { ReportMap } from "@/components/ReportMap";
 import { PhotoUploader } from "@/components/PhotoUploader";
-import { useCurrentTenant } from "@/hooks/use-current-tenant";
+import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
 import { createReport, listCategoriesAndPriorities } from "@/lib/reports.functions";
 import { toast } from "sonner";
 import { Crosshair } from "lucide-react";
@@ -30,6 +30,11 @@ export const Route = createFileRoute("/_authenticated/reports/new")({
 function NewReport() {
   const { current } = useCurrentTenant();
   const nav = useNavigate();
+  const { data: role } = useMyRole(current?.tenant.id);
+
+  useEffect(() => {
+    if (role && role !== "resident") nav({ to: "/dashboard", replace: true });
+  }, [role, nav]);
 
   const catFn = useServerFn(listCategoriesAndPriorities);
   const createFn = useServerFn(createReport);
