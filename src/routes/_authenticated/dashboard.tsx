@@ -12,12 +12,12 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { relativeTime } from "@/lib/format";
 import {
   Building2,
-  CalendarDays,
-  CheckCircle2,
-  Clock,
+  CalendarClock,
+  CircleCheck,
+  Hourglass,
   Inbox,
-  PlusCircle,
-  TrendingUp,
+  PencilLine,
+  ArrowUpRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -83,23 +83,23 @@ function Dashboard() {
         actions={
           <Button asChild>
             <Link to="/reports/new">
-              <PlusCircle className="mr-2 h-4 w-4" /> New report
+              <PencilLine strokeWidth={1.7} className="mr-2 h-4 w-4" /> New report
             </Link>
           </Button>
         }
       />
 
       <div className="grid gap-4 md:grid-cols-4">
-        <StatCard label="Today" value={stats.data?.today ?? "—"} icon={CalendarDays} tone="bg-blue-500/10 text-blue-600" />
-        <StatCard label="Open" value={stats.data?.pending ?? "—"} icon={Inbox} tone="bg-amber-500/10 text-amber-600" />
-        <StatCard label="Completed (30d)" value={stats.data?.completed30d ?? "—"} icon={CheckCircle2} tone="bg-emerald-500/10 text-emerald-600" />
-        <StatCard label="Avg response" value={stats.data ? `${stats.data.avgResponseHours}h` : "—"} icon={Clock} tone="bg-violet-500/10 text-violet-600" />
+        <StatCard label="Today" value={stats.data?.today ?? "—"} icon={CalendarClock} />
+        <StatCard label="Open" value={stats.data?.pending ?? "—"} icon={Inbox} />
+        <StatCard label="Completed (30d)" value={stats.data?.completed30d ?? "—"} icon={CircleCheck} />
+        <StatCard label="Avg response" value={stats.data ? `${stats.data.avgResponseHours}h` : "—"} icon={Hourglass} />
       </div>
 
       <Card className="mt-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">Recent reports</CardTitle>
-          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <ArrowUpRight strokeWidth={1.6} className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent className="p-0">
           {mine.data && mine.data.length === 0 && (
@@ -128,25 +128,21 @@ function StatCard({
   label,
   value,
   icon: Icon,
-  tone,
 }: {
   label: string;
   value: number | string;
   icon: LucideIcon;
-  tone: string;
 }) {
   return (
-    <Card>
+    <Card className="relative overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-        <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <CardTitle className="text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
           {label}
         </CardTitle>
-        <div className={`flex h-8 w-8 items-center justify-center rounded-md ${tone}`}>
-          <Icon className="h-4 w-4" />
-        </div>
+        <Icon strokeWidth={1.4} className="h-4 w-4 text-muted-foreground/70" />
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
+        <div className="text-2xl font-semibold tracking-tight">{value}</div>
       </CardContent>
     </Card>
   );
