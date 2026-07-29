@@ -1,10 +1,13 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { BrandMark } from "@/components/BrandMark";
+import truckPhoto from "@/assets/collection-truck.jpg.asset.json";
 import {
   ArrowRight,
   BarChart3,
   Camera,
   MapPin,
+  Phone,
   Shield,
   Truck,
   Users,
@@ -19,10 +22,8 @@ function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Truck className="h-5 w-5" />
-          </div>
-          <span className="text-base font-bold tracking-tight">Garbage Tracker</span>
+          <BrandMark className="h-8 w-8 text-primary" />
+          <span className="text-base font-semibold tracking-tight">Garbage Tracker</span>
         </div>
         <nav className="flex items-center gap-2">
           <Button asChild variant="ghost">
@@ -36,22 +37,21 @@ function Landing() {
         </nav>
       </header>
 
-      <section className="relative overflow-hidden border-b bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-2 md:py-28">
+      <section className="relative overflow-hidden border-b">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1.05fr_1fr] md:py-24">
           <div className="flex flex-col justify-center">
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+            <span className="inline-flex w-fit items-center gap-2 border-l-2 border-primary py-1 pl-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
               Multi-tenant municipal platform
             </span>
-            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-tight md:text-5xl">
+            <h1 className="mt-5 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
               Municipal waste operations,{" "}
               <span className="text-primary">digitised end to end.</span>
             </h1>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">
               Residents report. Dispatchers assign. Collectors execute. Supervisors verify.
               One workflow, one map, one audit trail — across every municipality on your network.
             </p>
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild size="lg">
                 <Link to="/auth">
                   Launch the platform <ArrowRight className="ml-2 h-4 w-4" />
@@ -61,18 +61,36 @@ function Landing() {
                 <a href="#capabilities">See capabilities</a>
               </Button>
             </div>
-          </div>
-          <div className="relative rounded-2xl border bg-card p-6 shadow-xl">
-            <div className="grid gap-3">
+            <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t pt-6">
               {[
-                { icon: Camera, title: "New report submitted", meta: "3rd Ave · 2 min ago", tone: "bg-accent/25 text-accent-foreground" },
-                { icon: Truck, title: "Route T-14 en route", meta: "Collector Amina", tone: "bg-primary/10 text-primary" },
-                { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago", tone: "bg-chart-4/20 text-chart-4" },
+                { k: "3", v: "Roles in the loop" },
+                { k: "GPS", v: "Pinned reports" },
+                { k: "SLA", v: "Tracked to close" },
+              ].map((s) => (
+                <div key={s.v}>
+                  <dt className="text-2xl font-semibold tracking-tight">{s.k}</dt>
+                  <dd className="mt-1 text-xs text-muted-foreground">{s.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+          <div className="relative">
+            <div className="overflow-hidden rounded-2xl border">
+              <img
+                src={truckPhoto.url}
+                alt="A municipal collection truck tipping household waste at a landfill site"
+                loading="lazy"
+                className="h-[340px] w-full object-cover md:h-[420px]"
+              />
+            </div>
+            <div className="relative -mt-10 ml-4 mr-4 grid gap-2 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur md:ml-10 md:mr-0">
+              {[
+                { icon: Camera, title: "New report submitted", meta: "3rd Ave · 2 min ago" },
+                { icon: Truck, title: "Route T-14 en route", meta: "Collector Amina" },
+                { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago" },
               ].map((r, i) => (
-                <div key={i} className="flex items-center gap-3 rounded-xl border bg-background p-3">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${r.tone}`}>
-                    <r.icon className="h-5 w-5" />
-                  </div>
+                <div key={i} className="flex items-center gap-3 rounded-lg px-2 py-2">
+                  <r.icon className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{r.title}</p>
                     <p className="truncate text-xs text-muted-foreground">{r.meta}</p>
@@ -93,17 +111,16 @@ function Landing() {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {[
             { icon: Camera, title: "Report with photo & GPS", body: "Residents pin the exact spot, describe the issue, and attach evidence photos in seconds." },
+            { icon: Phone, title: "Direct contact", body: "Residents can leave a contact number on a report so the assigned collector can call them." },
             { icon: Truck, title: "Dispatch & routing", body: "Supervisors assign collectors, watch progress on the live map, and re-route on the fly." },
             { icon: Shield, title: "Verified completion", body: "Completion photos, ratings, and a per-report audit trail — cleanup is provably done." },
             { icon: MapPin, title: "Live map & heatmap", body: "See every open report and collector position update in real time across the municipality." },
             { icon: BarChart3, title: "SLA & analytics", body: "Track response times, backlog, and per-category volume with priority-based SLAs." },
             { icon: Users, title: "Multi-tenant", body: "Each municipality is fully isolated — data, categories, priorities, and staff — via row-level security." },
           ].map((f) => (
-            <div key={f.title} className="rounded-xl border bg-card p-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <f.icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-3 font-semibold">{f.title}</h3>
+            <div key={f.title} className="border-t pt-5">
+              <f.icon className="h-5 w-5 text-primary" strokeWidth={1.4} />
+              <h3 className="mt-3 font-medium tracking-tight">{f.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
             </div>
           ))}
