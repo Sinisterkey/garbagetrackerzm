@@ -135,6 +135,17 @@ function ReportDetail() {
                 {report.priority && <span>Priority: {(report.priority as any).name}</span>}
                 <span>Created {relativeTime(report.created_at)}</span>
               </div>
+              {(report as any).contact_phone && (
+                <p className="text-sm">
+                  Reporter contact:{" "}
+                  <a
+                    className="font-medium text-primary underline-offset-4 hover:underline"
+                    href={`tel:${(report as any).contact_phone}`}
+                  >
+                    {(report as any).contact_phone}
+                  </a>
+                </p>
+              )}
             </CardContent>
           </Card>
 

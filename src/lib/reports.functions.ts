@@ -43,6 +43,7 @@ export const createReport = createServerFn({ method: "POST" })
         lat: z.number().min(-90).max(90),
         lng: z.number().min(-180).max(180),
         address: z.string().max(300).optional(),
+        contactPhone: z.string().trim().max(30).optional(),
         photoPaths: z.array(z.string().max(400)).max(10).default([]),
       })
       .parse(d),
@@ -87,6 +88,7 @@ export const createReport = createServerFn({ method: "POST" })
         lat: data.lat,
         lng: data.lng,
         address: data.address ?? null,
+        contact_phone: data.contactPhone || null,
         sla_deadline: slaDeadline,
       })
       .select()
