@@ -26,6 +26,7 @@ export const listCollectors = createServerFn({ method: "POST" })
 
 export const assignCollector = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
     z
       .object({
