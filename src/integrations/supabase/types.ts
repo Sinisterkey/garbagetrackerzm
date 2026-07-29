@@ -633,6 +633,7 @@ export type Database = {
           assigned_collector_id: string | null
           category_id: string | null
           completed_at: string | null
+          contact_phone: string | null
           created_at: string
           deleted_at: string | null
           description: string | null
@@ -659,6 +660,7 @@ export type Database = {
           assigned_collector_id?: string | null
           category_id?: string | null
           completed_at?: string | null
+          contact_phone?: string | null
           created_at?: string
           deleted_at?: string | null
           description?: string | null
@@ -685,6 +687,7 @@ export type Database = {
           assigned_collector_id?: string | null
           category_id?: string | null
           completed_at?: string | null
+          contact_phone?: string | null
           created_at?: string
           deleted_at?: string | null
           description?: string | null
