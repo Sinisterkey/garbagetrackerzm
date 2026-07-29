@@ -32,34 +32,41 @@ export const Route = createFileRoute("/")({
 function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <div className="flex items-center gap-2">
-          <BrandMark className="h-8 w-8 text-primary" />
-          <span className="text-base font-semibold tracking-tight">Garbage Tracker</span>
-        </div>
-        <nav className="flex items-center gap-2">
-          <Button asChild variant="ghost">
-            <Link to="/auth">Sign in</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/auth">
-              Get started <ArrowRight className="ml-1 h-4 w-4" />
-            </Link>
-          </Button>
-        </nav>
-      </header>
+      <section className="relative isolate overflow-hidden border-b">
+        <img
+          src={truckPhoto.url}
+          alt="A municipal collection truck tipping household waste at a landfill site"
+          className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
+        />
+        <div className="absolute inset-0 -z-10 bg-foreground/75" />
 
-      <section className="relative overflow-hidden border-b">
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:grid-cols-[1.05fr_1fr] md:py-24">
-          <div className="flex flex-col justify-center">
-            <span className="inline-flex w-fit items-center gap-2 border-l-2 border-primary py-1 pl-3 text-xs font-medium uppercase tracking-[0.18em] text-muted-foreground">
+        <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+          <div className="flex items-center gap-2 text-background">
+            <BrandMark className="h-8 w-8" />
+            <span className="text-base font-semibold tracking-tight">Garbage Tracker</span>
+          </div>
+          <nav className="flex items-center gap-2">
+            <Button asChild variant="ghost" className="text-background hover:bg-background/10 hover:text-background">
+              <Link to="/auth">Sign in</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/auth">
+                Get started <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
+            </Button>
+          </nav>
+        </header>
+
+        <div className="mx-auto max-w-6xl px-6 pb-20 pt-10 md:pb-28 md:pt-20">
+          <div className="max-w-2xl">
+            <span className="inline-flex w-fit items-center gap-2 border-l-2 border-primary py-1 pl-3 text-xs font-medium uppercase tracking-[0.18em] text-background/80">
               Multi-tenant municipal platform
             </span>
-            <h1 className="mt-5 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+            <h1 className="mt-5 text-4xl font-semibold leading-[1.05] tracking-tight text-background md:text-6xl">
               Municipal waste operations,{" "}
               <span className="text-primary">digitised end to end.</span>
             </h1>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted-foreground">
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-background/80">
               Residents report. Dispatchers assign. Collectors execute. Supervisors verify.
               One workflow, one map, one audit trail — across every municipality on your network.
             </p>
@@ -69,48 +76,46 @@ function Landing() {
                   Launch the platform <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
+              >
                 <a href="#capabilities">See capabilities</a>
               </Button>
             </div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t pt-6">
+            <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-background/25 pt-6">
               {[
                 { k: "3", v: "Roles in the loop" },
                 { k: "GPS", v: "Pinned reports" },
                 { k: "SLA", v: "Tracked to close" },
               ].map((s) => (
                 <div key={s.v}>
-                  <dt className="text-2xl font-semibold tracking-tight">{s.k}</dt>
-                  <dd className="mt-1 text-xs text-muted-foreground">{s.v}</dd>
+                  <dt className="text-2xl font-semibold tracking-tight text-background">{s.k}</dt>
+                  <dd className="mt-1 text-xs text-background/70">{s.v}</dd>
                 </div>
               ))}
             </dl>
           </div>
-          <div className="relative">
-            <div className="overflow-hidden rounded-2xl border">
-              <img
-                src={truckPhoto.url}
-                alt="A municipal collection truck tipping household waste at a landfill site"
-                loading="lazy"
-                className="h-[340px] w-full object-cover md:h-[420px]"
-              />
+        </div>
+      </section>
+
+      <section className="border-b bg-muted/30">
+        <div className="mx-auto grid max-w-6xl gap-4 px-6 py-8 sm:grid-cols-3">
+          {[
+            { icon: Camera, title: "New report submitted", meta: "3rd Ave · 2 min ago" },
+            { icon: Truck, title: "Route T-14 en route", meta: "Collector Amina" },
+            { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago" },
+          ].map((r, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <r.icon className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{r.title}</p>
+                <p className="truncate text-xs text-muted-foreground">{r.meta}</p>
+              </div>
             </div>
-            <div className="relative -mt-10 ml-4 mr-4 grid gap-2 rounded-xl border bg-card/95 p-3 shadow-lg backdrop-blur md:ml-10 md:mr-0">
-              {[
-                { icon: Camera, title: "New report submitted", meta: "3rd Ave · 2 min ago" },
-                { icon: Truck, title: "Route T-14 en route", meta: "Collector Amina" },
-                { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago" },
-              ].map((r, i) => (
-                <div key={i} className="flex items-center gap-3 rounded-lg px-2 py-2">
-                  <r.icon className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{r.title}</p>
-                    <p className="truncate text-xs text-muted-foreground">{r.meta}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
