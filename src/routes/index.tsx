@@ -15,6 +15,18 @@ import {
 
 export const Route = createFileRoute("/")({
   component: Landing,
+  head: () => ({
+    meta: [
+      { title: "Garbage Tracker — Report, dispatch and verify waste collection" },
+      { name: "description", content: "Residents report waste with photos, GPS and a contact number; collectors claim jobs and admins verify every cleanup on one live map." },
+      { property: "og:title", content: "Garbage Tracker — Report, dispatch and verify waste collection" },
+      { property: "og:description", content: "Residents report waste with photos, GPS and a contact number; collectors claim jobs and admins verify every cleanup on one live map." },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://garbagetrackerzm.lovable.app/" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: "https://garbagetrackerzm.lovable.app/" }],
+  }),
 });
 
 function Landing() {
