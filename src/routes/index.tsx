@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/BrandMark";
-import truckPhoto from "@/assets/collection-truck.jpg.asset.json";
+import truckPhoto from "@/assets/collection-truck.jpg";
 import {
   ArrowRight,
   BarChart3,
@@ -34,7 +34,7 @@ function Landing() {
     <div className="min-h-screen bg-background text-foreground">
       <section className="relative isolate overflow-hidden border-b">
         <img
-          src={truckPhoto.url}
+          src={truckPhoto}
           alt="A municipal collection truck tipping household waste at a landfill site"
           className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
         />
@@ -109,7 +109,9 @@ function Landing() {
             { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago" },
           ].map((r, i) => (
             <div key={i} className="flex items-center gap-3">
-              <r.icon className="h-4 w-4 shrink-0 text-muted-foreground" strokeWidth={1.6} />
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                <r.icon className="h-5 w-5" strokeWidth={2} />
+              </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{r.title}</p>
                 <p className="truncate text-xs text-muted-foreground">{r.meta}</p>
@@ -136,7 +138,7 @@ function Landing() {
             { icon: Users, title: "Multi-tenant", body: "Each municipality is fully isolated — data, categories, priorities, and staff — via row-level security." },
           ].map((f) => (
             <div key={f.title} className="border-t pt-5">
-              <f.icon className="h-5 w-5 text-primary" strokeWidth={1.4} />
+              <f.icon className="h-6 w-6 text-primary" strokeWidth={2} />
               <h3 className="mt-3 font-medium tracking-tight">{f.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
             </div>
