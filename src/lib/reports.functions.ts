@@ -122,7 +122,7 @@ export const listReports = createServerFn({ method: "POST" })
     z
       .object({
         tenantId,
-        scope: z.enum(["mine", "assigned", "all"]).default("all"),
+        scope: z.enum(["mine", "assigned", "available", "all"]).default("all"),
         status: z.enum(REPORT_STATUSES).optional(),
         search: z.string().max(120).optional(),
         limit: z.number().min(1).max(200).default(50),
@@ -141,6 +141,7 @@ export const listReports = createServerFn({ method: "POST" })
       .limit(data.limit);
     if (data.scope === "mine") q = q.eq("reporter_id", context.userId);
     if (data.scope === "assigned") q = q.eq("assigned_collector_id", context.userId);
+    if (data.scope === "available") q = q.is("assigned_collector_id", null).eq("status", "submitted");
     if (data.status) q = q.eq("status", data.status);
     if (data.search) q = q.ilike("title", `%${data.search}%`);
     const { data: rows, error } = await q;
