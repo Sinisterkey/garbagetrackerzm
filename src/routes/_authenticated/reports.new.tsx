@@ -53,6 +53,7 @@ function NewReport() {
   const [urgent, setUrgent] = useState(false);
   const [pos, setPos] = useState<{ lat: number; lng: number } | null>(null);
   const [address, setAddress] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
 
   useEffect(() => {
@@ -83,6 +84,7 @@ function NewReport() {
           lat: pos!.lat,
           lng: pos!.lng,
           address: address || undefined,
+          contactPhone: contactPhone || undefined,
           photoPaths: photos,
         },
       }),
@@ -174,6 +176,19 @@ function NewReport() {
             <div>
               <Label>Address (optional)</Label>
               <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+            </div>
+            <div>
+              <Label>Contact number (optional)</Label>
+              <Input
+                type="tel"
+                maxLength={30}
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="+260 97 000 0000"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Shared with the collector handling this report so they can reach you.
+              </p>
             </div>
             <div>
               <Label>Photos</Label>
