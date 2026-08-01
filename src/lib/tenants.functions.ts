@@ -2,14 +2,6 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 40);
-
 /** List every tenant the caller belongs to (with their role). */
 export const listMyTenants = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -40,7 +32,8 @@ export const getTenant = createServerFn({ method: "GET" })
 
 /**
  * Create a new municipality (tenant) and enroll the caller as its administrator.
- * Uses the admin client because RLS only lets pre-existing admins insert tenants.
+ * Runs through a security-definer database function so it works with the
+ * caller's own session (no service-role key required at runtime).
  */
 export const createTenant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -55,47 +48,15 @@ export const createTenant = createServerFn({ method: "POST" })
       .parse(d),
   )
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const baseSlug = slugify(data.name) || "municipality";
-    let slug = baseSlug;
-    let n = 1;
-    // ensure unique slug
-    while (true) {
-      const { data: exists } = await supabaseAdmin
-        .from("tenants")
-        .select("id")
-        .eq("slug", slug)
-        .maybeSingle();
-      if (!exists) break;
-      n += 1;
-      slug = `${baseSlug}-${n}`;
-    }
-    const { data: tenant, error } = await supabaseAdmin
-      .from("tenants")
-      .insert({
-        name: data.name,
-        slug,
-        timezone: data.timezone,
-        center_lat: data.centerLat,
-        center_lng: data.centerLng,
-      })
-      .select()
-      .single();
+    const { data: tenant, error } = await (context.supabase as any).rpc("create_tenant_with_admin", {
+      _name: data.name,
+      _timezone: data.timezone,
+      _center_lat: data.centerLat,
+      _center_lng: data.centerLng,
+    });
     if (error) throw new Error(error.message);
-    const { error: mErr } = await supabaseAdmin.from("tenant_members").insert({
-      tenant_id: tenant.id,
-      user_id: context.userId,
-      role: "administrator",
-    });
-    if (mErr) throw new Error(mErr.message);
-    await supabaseAdmin.from("audit_logs").insert({
-      tenant_id: tenant.id,
-      actor_id: context.userId,
-      action: "tenant.created",
-      entity: "tenant",
-      entity_id: tenant.id,
-    });
-    return tenant;
+    if (!tenant) throw new Error("Could not create the municipality. Please try again.");
+    return tenant as { id: string; name: string; slug: string };
   });
 
 /** Join an existing tenant as a resident (self-service). */
@@ -115,15 +76,10 @@ export const joinTenantAsResident = createServerFn({ method: "POST" })
 /** List every tenant on the platform (public directory for onboarding). */
 export const listTenantDirectory = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async () => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data, error } = await supabaseAdmin
-      .from("tenants")
-      .select("id, name, slug")
-      .eq("active", true)
-      .order("name");
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("list_tenant_directory");
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return (data ?? []) as { id: string; name: string; slug: string }[];
   });
 
 /** Update tenant settings (admin only). */
