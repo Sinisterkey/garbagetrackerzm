@@ -863,6 +863,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_tenant_with_admin: {
+        Args: {
+          _center_lat?: number
+          _center_lng?: number
+          _name: string
+          _timezone?: string
+        }
+        Returns: {
+          active: boolean
+          center_lat: number
+          center_lng: number
+          created_at: string
+          default_zoom: number
+          id: string
+          logo_path: string | null
+          name: string
+          settings: Json
+          slug: string
+          timezone: string
+          updated_at: string
+          working_hours: Json
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenants"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_tenant_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -883,6 +912,14 @@ export type Database = {
       is_tenant_staff: {
         Args: { _tenant: string; _uid: string }
         Returns: boolean
+      }
+      list_tenant_directory: {
+        Args: never
+        Returns: {
+          id: string
+          name: string
+          slug: string
+        }[]
       }
     }
     Enums: {
