@@ -82,7 +82,12 @@ function Landing() {
                 variant="outline"
                 className="border-background/40 bg-transparent text-background hover:bg-background/10 hover:text-background"
               >
-                <a href="#capabilities">See capabilities</a>
+                <a
+                  href="#capabilities"
+                  className="focus-visible:ring-2 focus-visible:ring-background focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
+                >
+                  See capabilities
+                </a>
               </Button>
             </div>
             <dl className="mt-12 grid max-w-md grid-cols-3 gap-6 border-t border-background/25 pt-6">
@@ -108,9 +113,13 @@ function Landing() {
             { icon: Truck, title: "Route T-14 en route", meta: "Collector Amina" },
             { icon: Shield, title: "Verified & closed", meta: "Downtown block · 15 min ago" },
           ].map((r, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                <r.icon className="h-5 w-5" strokeWidth={2} />
+            <div
+              key={i}
+              tabIndex={0}
+              className="group flex items-center gap-3 rounded-lg p-2 transition-colors hover:bg-background focus-visible:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/40 transition-transform group-hover:scale-105 group-focus-visible:scale-105">
+                <r.icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
               </span>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{r.title}</p>
@@ -137,8 +146,14 @@ function Landing() {
             { icon: BarChart3, title: "SLA & analytics", body: "Track response times, backlog, and per-category volume with priority-based SLAs." },
             { icon: Users, title: "Multi-tenant", body: "Each municipality is fully isolated — data, categories, priorities, and staff — via row-level security." },
           ].map((f) => (
-            <div key={f.title} className="border-t pt-5">
-              <f.icon className="h-6 w-6 text-primary" strokeWidth={2} />
+            <div
+              key={f.title}
+              tabIndex={0}
+              className="group rounded-lg border-t pt-5 transition-colors hover:border-primary focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-md bg-primary/12 text-primary ring-1 ring-primary/30 transition-colors group-hover:bg-primary group-hover:text-primary-foreground group-focus-visible:bg-primary group-focus-visible:text-primary-foreground">
+                <f.icon className="h-5 w-5" strokeWidth={2.25} aria-hidden="true" />
+              </span>
               <h3 className="mt-3 font-medium tracking-tight">{f.title}</h3>
               <p className="mt-1 text-sm text-muted-foreground">{f.body}</p>
             </div>
