@@ -3,6 +3,22 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const TENANT_COLS = "id, name, slug, logo_path, center_lat, center_lng, default_zoom";
+const ROLE_RANK = { super_admin: 5, administrator: 4, supervisor: 3, collector: 2, resident: 1 } as const;
+
+function highestMembershipPerTenant(rows: any[]) {
+  const highest = new Map<string, any>();
+  for (const row of rows) {
+    const tenantId = row.tenant_id ?? row.tenant?.id;
+    if (!tenantId) continue;
+    const existing = highest.get(tenantId);
+    const role = row.role as keyof typeof ROLE_RANK;
+    const existingRole = existing?.role as keyof typeof ROLE_RANK | undefined;
+    if (!existing || (ROLE_RANK[role] ?? 0) > (existingRole ? ROLE_RANK[existingRole] ?? 0 : 0)) {
+      highest.set(tenantId, row);
+    }
+  }
+  return [...highest.values()];
+}
 
 /**
  * List every tenant the caller belongs to (with their role and approval status).
@@ -60,7 +76,7 @@ export const listMyTenants = createServerFn({ method: "GET" })
       .select("user_id")
       .eq("user_id", context.userId)
       .maybeSingle();
-    if (!superRow) return rows;
+    if (!superRow) return highestMembershipPerTenant(rows);
 
     const { data: all } = await (context.supabase as any).rpc("list_all_tenants");
     const seen = new Set(rows.map((r) => r.tenant?.id));
@@ -81,7 +97,10 @@ export const listMyTenants = createServerFn({ method: "GET" })
         },
       }));
     // Super admin rows in their own memberships become super_admin as well
-    return [...rows.map((r) => ({ ...r, role: "super_admin", status: "approved" })), ...extra];
+    return highestMembershipPerTenant([
+      ...rows.map((r) => ({ ...r, role: "super_admin", status: "approved" })),
+      ...extra,
+    ]);
   });
 
 /** Is the caller the platform administrator? */
@@ -246,9 +265,8 @@ export const myRoleIn = createServerFn({ method: "POST" })
       .eq("status", "approved");
     if (error) throw new Error(error.message);
     // pick highest role: super>admin>supervisor>collector>resident
-    const rank = { super_admin: 5, administrator: 4, supervisor: 3, collector: 2, resident: 1 } as const;
-    const roles = (rows ?? []).map((r) => r.role as keyof typeof rank);
+    const roles = (rows ?? []).map((r) => r.role as keyof typeof ROLE_RANK);
     if (roles.length === 0) return null;
-    roles.sort((a, b) => rank[b] - rank[a]);
+    roles.sort((a, b) => ROLE_RANK[b] - ROLE_RANK[a]);
     return roles[0];
   });
