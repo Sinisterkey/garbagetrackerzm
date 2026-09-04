@@ -11,11 +11,24 @@ const TENANT_COLS = "id, name, slug, logo_path, center_lat, center_lng, default_
 export const listMyTenants = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
+    let { data, error } = await context.supabase
       .from("tenant_members")
       .select(`role, active, status, tenant_id, tenant:tenants(${TENANT_COLS})`)
       .eq("user_id", context.userId)
       .eq("active", true);
+
+    // Keep role resolution working on deployments that have not yet received
+    // the collector-approval columns. Those memberships predate approval and
+    // are therefore treated as approved until that migration is applied.
+    if (error?.message.includes("tenant_members.status does not exist")) {
+      const legacy = await context.supabase
+        .from("tenant_members")
+        .select(`role, active, tenant_id, tenant:tenants(${TENANT_COLS})`)
+        .eq("user_id", context.userId)
+        .eq("active", true);
+      data = (legacy.data ?? []).map((row) => ({ ...row, status: "approved" })) as typeof data;
+      error = legacy.error;
+    }
     if (error) throw new Error(error.message);
     let rows = (data ?? []) as any[];
 
