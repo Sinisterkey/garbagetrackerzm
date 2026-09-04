@@ -11,7 +11,7 @@ export const listTenantMembers = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: members, error } = await context.supabase
       .from("tenant_members")
-      .select("id,user_id,role,active,created_at")
+      .select("id,user_id,role,active,status,created_at")
       .eq("tenant_id", data.tenantId)
       .order("created_at");
     if (error) throw new Error(error.message);

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
+import { useCurrentTenant, useMyRole, usePlatformAdmin } from "@/hooks/use-current-tenant";
 import {
   deleteCategory,
   deletePriority,
@@ -24,7 +24,9 @@ import {
   grantRole,
   listAnnouncements,
   listAuditLogs,
+  listPendingCollectors,
   listTenantMembers,
+  reviewCollector,
   revokeRole,
   saveAnnouncement,
   saveCategory,
@@ -34,7 +36,7 @@ import { listCategoriesAndPriorities } from "@/lib/reports.functions";
 import { ROLE_LABELS, type AppRole } from "@/lib/rbac";
 import { toast } from "sonner";
 import { fmtDate } from "@/lib/format";
-import { Trash2 } from "lucide-react";
+import { Check, Trash2, X } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
@@ -43,6 +45,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 function AdminPage() {
   const { current } = useCurrentTenant();
   const { data: role } = useMyRole(current?.tenant.id);
+  const { data: isPlatformAdmin } = usePlatformAdmin();
 
   if (!current) return <AppShell><p>Select a municipality.</p></AppShell>;
   if (role !== "administrator" && role !== "super_admin")
@@ -55,15 +58,27 @@ function AdminPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Administration" description={current.tenant.name} />
-      <Tabs defaultValue="members">
-        <TabsList>
+      <PageHeader
+        title="Administration"
+        description={current.tenant.name}
+        actions={
+          isPlatformAdmin ? (
+            <Button asChild variant="outline">
+              <Link to="/onboarding">Create municipality</Link>
+            </Button>
+          ) : undefined
+        }
+      />
+      <Tabs defaultValue={isPlatformAdmin ? "approvals" : "members"}>
+        <TabsList className="flex-wrap">
+          {isPlatformAdmin && <TabsTrigger value="approvals">Approvals</TabsTrigger>}
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="priorities">Priorities</TabsTrigger>
           <TabsTrigger value="announcements">Announcements</TabsTrigger>
           <TabsTrigger value="audit">Audit log</TabsTrigger>
         </TabsList>
+        {isPlatformAdmin && <TabsContent value="approvals" className="mt-4"><Approvals /></TabsContent>}
         <TabsContent value="members" className="mt-4"><Members tenantId={current.tenant.id} /></TabsContent>
         <TabsContent value="categories" className="mt-4"><Categories tenantId={current.tenant.id} /></TabsContent>
         <TabsContent value="priorities" className="mt-4"><Priorities tenantId={current.tenant.id} /></TabsContent>
@@ -71,6 +86,72 @@ function AdminPage() {
         <TabsContent value="audit" className="mt-4"><AuditLog tenantId={current.tenant.id} /></TabsContent>
       </Tabs>
     </AppShell>
+  );
+}
+
+function Approvals() {
+  const qc = useQueryClient();
+  const listFn = useServerFn(listPendingCollectors);
+  const reviewFn = useServerFn(reviewCollector);
+  const q = useQuery({ queryKey: ["pending-collectors"], queryFn: () => listFn({}) });
+
+  const review = useMutation({
+    mutationFn: (v: { memberId: string; approve: boolean }) => reviewFn({ data: v }),
+    onSuccess: (_r, v) => {
+      toast.success(v.approve ? "Collector approved" : "Request declined");
+      qc.invalidateQueries({ queryKey: ["pending-collectors"] });
+      qc.invalidateQueries({ queryKey: ["members"] });
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Collectors awaiting approval</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {q.isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
+        {q.data && q.data.length === 0 && (
+          <p className="text-sm text-muted-foreground">No pending requests.</p>
+        )}
+        <ul className="divide-y text-sm">
+          {(q.data ?? []).map((r) => (
+            <li key={r.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
+              <div className="min-w-0">
+                <p className="font-medium">{r.full_name ?? r.email ?? r.user_id.slice(0, 8)}</p>
+                <p className="text-xs text-muted-foreground">
+                  {r.email}
+                  {r.phone ? ` · ${r.phone}` : ""}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {r.tenant_name} · requested {fmtDate(r.created_at)}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  disabled={review.isPending}
+                  onClick={() => review.mutate({ memberId: r.id, approve: true })}
+                  className="gap-1"
+                >
+                  <Check className="h-4 w-4" /> Approve
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={review.isPending}
+                  onClick={() => review.mutate({ memberId: r.id, approve: false })}
+                  className="gap-1"
+                >
+                  <X className="h-4 w-4" /> Reject
+                </Button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </CardContent>
+    </Card>
   );
 }
 
