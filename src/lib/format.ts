@@ -1,20 +1,32 @@
+function parseDate(iso: string): Date {
+  // Supabase can return timestamps without a timezone marker; treat them as UTC.
+  const hasTz = /([zZ]|[+-]\d{2}:?\d{2})$/.test(iso.trim());
+  return new Date(hasTz ? iso : iso.replace(" ", "T") + "Z");
+}
+
 export function relativeTime(iso: string | null | undefined) {
   if (!iso) return "—";
-  const d = new Date(iso);
+  const d = parseDate(iso);
   const diff = Date.now() - d.getTime();
-  const min = Math.round(diff / 60000);
+  const min = Math.floor(diff / 60000);
   if (min < 1) return "just now";
   if (min < 60) return `${min}m ago`;
-  const hr = Math.round(min / 60);
+  const hr = Math.floor(min / 60);
   if (hr < 24) return `${hr}h ago`;
-  const day = Math.round(hr / 24);
+  const day = Math.floor(hr / 24);
   if (day < 30) return `${day}d ago`;
   return d.toLocaleDateString();
 }
 
 export function fmtDate(iso: string | null | undefined) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString();
+  return parseDate(iso).toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
 export function distanceKm(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
