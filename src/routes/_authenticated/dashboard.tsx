@@ -86,8 +86,8 @@ function Dashboard() {
   return (
     <AppShell>
       <PageHeader
-        title={`Welcome to ${current.tenant.name}`}
-        description="Live overview of reports and operations."
+        title={`Welcome, ${displayName}`}
+        description={`Live overview of reports and operations for ${current.tenant.name}.`}
         actions={
           role === "resident" ? (
             <Button asChild>
