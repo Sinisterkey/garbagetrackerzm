@@ -123,8 +123,6 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function BackButton() {
   const router = useRouter();
-  const pathname = router.state.location.pathname;
-  if (pathname === "/") return null;
 
   return (
     <button
