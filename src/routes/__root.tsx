@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { BrandMark } from "@/components/BrandMark";
+import { ArrowLeft } from "lucide-react";
 
 function NotFoundComponent() {
   return (
@@ -120,6 +121,22 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+function BackButton() {
+  const router = useRouter();
+
+  return (
+    <button
+      type="button"
+      onClick={() => router.history.back()}
+      className="fixed left-4 top-4 z-[2147483647] flex h-10 w-10 items-center justify-center rounded-full bg-foreground/80 text-background shadow-lg backdrop-blur-md transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      aria-label="Go back"
+      title="Go back"
+    >
+      <ArrowLeft className="h-5 w-5" strokeWidth={2.5} />
+    </button>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const router = useRouter();
@@ -136,6 +153,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <BackButton />
       <Outlet />
       <Toaster richColors position="top-right" />
 
