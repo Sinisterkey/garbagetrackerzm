@@ -6,6 +6,7 @@ import { AppShell, EmptyState, PageHeader } from "@/components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
+import { useSession } from "@/hooks/use-session";
 import { listReports } from "@/lib/reports.functions";
 import { getDashboardStats } from "@/lib/analytics.functions";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -27,8 +28,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const nav = useNavigate();
+  const { user } = useSession();
   const { current, loading } = useCurrentTenant();
   const { data: role } = useMyRole(current?.tenant.id);
+
+  const displayName =
+    (user?.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
+    || user?.email?.split("@")[0]
+    || "there";
 
   useEffect(() => {
     if (role === "collector") nav({ to: "/jobs", replace: true });
@@ -79,8 +86,8 @@ function Dashboard() {
   return (
     <AppShell>
       <PageHeader
-        title={`Welcome to ${current.tenant.name}`}
-        description="Live overview of reports and operations."
+        title={`Welcome, ${displayName}`}
+        description={`Live overview of reports and operations for ${current.tenant.name}.`}
         actions={
           role === "resident" ? (
             <Button asChild>
