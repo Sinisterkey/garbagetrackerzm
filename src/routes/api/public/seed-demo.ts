@@ -84,6 +84,11 @@ export const Route = createFileRoute("/api/public/seed-demo")({
               .eq("tenant_id", tenantId);
           }
 
+          // The demo administrator is also the platform administrator.
+          if (u.role === "administrator") {
+            await supabaseAdmin.from("super_admins").upsert({ user_id: userId! }, { onConflict: "user_id" });
+          }
+
           results.push({ email: u.email, password: u.password, role: u.role, status: "ok" });
         }
 
