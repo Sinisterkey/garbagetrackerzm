@@ -32,6 +32,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (role === "collector") nav({ to: "/jobs", replace: true });
+    if (role === "super_admin") nav({ to: "/admin", replace: true });
   }, [role, nav]);
 
   const listFn = useServerFn(listReports);

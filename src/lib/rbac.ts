@@ -10,7 +10,7 @@ export const ROLE_LABELS: Record<AppRole, string> = {
   collector: "Collector",
   supervisor: "Supervisor",
   administrator: "Administrator",
-  super_admin: "Super Admin",
+  super_admin: "Platform Admin",
 };
 
 export function isStaff(role: AppRole) {
