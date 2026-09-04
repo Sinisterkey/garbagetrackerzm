@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
+import { BrandMark } from "@/components/BrandMark";
 
 function NotFoundComponent() {
   return (
@@ -137,6 +138,14 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster richColors position="top-right" />
+
+      <div
+        className="fixed bottom-0 right-0 z-[2147483647] flex h-16 w-56 items-center justify-center gap-3 rounded-tl-2xl bg-foreground/80 px-5 text-background shadow-2xl backdrop-blur-md"
+        aria-hidden="true"
+      >
+        <BrandMark className="h-7 w-7" />
+        <span className="text-sm font-semibold tracking-tight">Garbage Tracker</span>
+      </div>
     </QueryClientProvider>
   );
 }
