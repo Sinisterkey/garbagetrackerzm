@@ -191,6 +191,11 @@ export const joinTenantAsResident = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ tenantId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
+    // Accounts created as garbage collectors must go through the approval flow.
+    const meta = (context.claims as any)?.user_metadata as Record<string, unknown> | undefined;
+    if (meta?.account_type === "collector") {
+      throw new Error("Your account was created as a garbage collector. Please request to collect for a municipality instead.");
+    }
     const { error } = await context.supabase.from("tenant_members").insert({
       tenant_id: data.tenantId,
       user_id: context.userId,
