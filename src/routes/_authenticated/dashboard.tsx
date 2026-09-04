@@ -28,8 +28,14 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 
 function Dashboard() {
   const nav = useNavigate();
+  const { user } = useSession();
   const { current, loading } = useCurrentTenant();
   const { data: role } = useMyRole(current?.tenant.id);
+
+  const displayName =
+    (user?.user_metadata as Record<string, unknown> | undefined)?.full_name as string | undefined
+    || user?.email?.split("@")[0]
+    || "there";
 
   useEffect(() => {
     if (role === "collector") nav({ to: "/jobs", replace: true });
