@@ -75,13 +75,18 @@ export const Route = createFileRoute("/api/public/seed-demo")({
           if (!mem) {
             await supabaseAdmin
               .from("tenant_members")
-              .insert({ user_id: userId!, tenant_id: tenantId, role: u.role, active: true });
+              .insert({ user_id: userId!, tenant_id: tenantId, role: u.role, active: true, status: "approved" });
           } else {
             await supabaseAdmin
               .from("tenant_members")
-              .update({ role: u.role, active: true })
+              .update({ role: u.role, active: true, status: "approved" })
               .eq("user_id", userId!)
               .eq("tenant_id", tenantId);
+          }
+
+          // The demo administrator is also the platform administrator.
+          if (u.role === "administrator") {
+            await supabaseAdmin.from("super_admins").upsert({ user_id: userId! }, { onConflict: "user_id" });
           }
 
           results.push({ email: u.email, password: u.password, role: u.role, status: "ok" });

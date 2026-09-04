@@ -16,7 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { TenantSwitcher } from "./TenantSwitcher";
 import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
 import { cn } from "@/lib/utils";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { AppRole } from "@/lib/rbac";
 import { BrandMark } from "./BrandMark";
@@ -37,9 +37,18 @@ const NAV: NavItem[] = [
 export function AppShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const qc = useQueryClient();
-  const { current } = useCurrentTenant();
+  const { current, memberships, pending, loading } = useCurrentTenant();
   const { data: role } = useMyRole(current?.tenant.id);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Collectors awaiting approval (and with no other approved membership) are
+  // confined to the waiting screen.
+  useEffect(() => {
+    if (loading) return;
+    if (memberships.length === 0 && pending.length > 0 && pathname !== "/pending") {
+      router.navigate({ to: "/pending", replace: true });
+    }
+  }, [loading, memberships.length, pending.length, pathname, router]);
 
   const items = NAV.filter((n) => (role ? n.roles.includes(role) : n.to === "/dashboard"));
 
