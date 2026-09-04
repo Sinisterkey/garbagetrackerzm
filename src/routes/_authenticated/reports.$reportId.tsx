@@ -133,7 +133,7 @@ function ReportDetail() {
                 {report.urgent && <span className="text-destructive">Urgent</span>}
                 {report.category && <span>Category: {(report.category as any).name}</span>}
                 {report.priority && <span>Priority: {(report.priority as any).name}</span>}
-                <span>Created {relativeTime(report.created_at)}</span>
+                <span>Created {fmtDate(report.created_at)}</span>
               </div>
               {(report as any).contact_phone && (
                 <p className="text-sm">
