@@ -168,13 +168,6 @@ function Landing() {
         </div>
       </footer>
 
-      <div
-        className="fixed bottom-0 right-0 z-[2147483647] flex items-center gap-2 rounded-tl-xl bg-foreground/75 px-4 py-3 text-background shadow-lg backdrop-blur-sm"
-        aria-hidden="true"
-      >
-        <BrandMark className="h-5 w-5" />
-        <span className="text-xs font-medium tracking-tight">Garbage Tracker</span>
-      </div>
     </div>
   );
 }
