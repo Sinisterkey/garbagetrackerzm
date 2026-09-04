@@ -778,25 +778,34 @@ export type Database = {
       tenant_members: {
         Row: {
           active: boolean
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          status: string
           tenant_id: string
           user_id: string
         }
         Insert: {
           active?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
+          status?: string
           tenant_id: string
           user_id: string
         }
         Update: {
           active?: boolean
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          status?: string
           tenant_id?: string
           user_id?: string
         }
@@ -863,7 +872,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      create_tenant_with_admin: {
+      create_tenant: {
         Args: {
           _center_lat?: number
           _center_lng?: number
@@ -913,6 +922,43 @@ export type Database = {
         Args: { _tenant: string; _uid: string }
         Returns: boolean
       }
+      list_all_tenants: {
+        Args: never
+        Returns: {
+          active: boolean
+          center_lat: number
+          center_lng: number
+          created_at: string
+          default_zoom: number
+          id: string
+          logo_path: string | null
+          name: string
+          settings: Json
+          slug: string
+          timezone: string
+          updated_at: string
+          working_hours: Json
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "tenants"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      list_pending_collectors: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string
+          tenant_id: string
+          tenant_name: string
+          user_id: string
+        }[]
+      }
       list_tenant_directory: {
         Args: never
         Returns: {
@@ -920,6 +966,52 @@ export type Database = {
           name: string
           slug: string
         }[]
+      }
+      review_collector: {
+        Args: { _approve: boolean; _member_id: string }
+        Returns: {
+          active: boolean
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+          tenant_id: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      signup_collector: {
+        Args: {
+          _center_lat?: number
+          _center_lng?: number
+          _new_name?: string
+          _tenant_id?: string
+          _timezone?: string
+        }
+        Returns: {
+          active: boolean
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          status: string
+          tenant_id: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
