@@ -169,7 +169,7 @@ function Landing() {
       </footer>
 
       <div
-        className="fixed bottom-3 right-3 z-[10000] flex items-center gap-2 rounded-lg bg-foreground/75 px-3 py-2 text-background shadow-lg backdrop-blur-sm"
+        className="fixed bottom-0 right-0 z-[2147483647] flex items-center gap-2 rounded-tl-xl bg-foreground/75 px-4 py-3 text-background shadow-lg backdrop-blur-sm"
         aria-hidden="true"
       >
         <BrandMark className="h-5 w-5" />
