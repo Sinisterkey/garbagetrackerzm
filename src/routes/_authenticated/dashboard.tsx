@@ -6,6 +6,7 @@ import { AppShell, EmptyState, PageHeader } from "@/components/AppShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
+import { useSession } from "@/hooks/use-session";
 import { listReports } from "@/lib/reports.functions";
 import { getDashboardStats } from "@/lib/analytics.functions";
 import { StatusBadge } from "@/components/StatusBadge";
