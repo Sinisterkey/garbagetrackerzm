@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { BrandMark } from "@/components/BrandMark";
+import { ArrowLeft } from "lucide-react";
 
 function NotFoundComponent() {
   return (
