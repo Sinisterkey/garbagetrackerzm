@@ -1,7 +1,7 @@
 import { createFileRoute, redirect, useNavigate, useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -269,6 +269,7 @@ function SignUpForm({ accountType, onSuccess }: { accountType: AccountType; onSu
 /** Second step for collectors: pick an existing municipality or create a new one. */
 function CollectorMunicipalityStep() {
   const nav = useNavigate();
+  const qc = useQueryClient();
   const [checked, setChecked] = useState(false);
   const [mode, setMode] = useState<"join" | "create">("join");
   const [tenantId, setTenantId] = useState<string>("");
@@ -305,8 +306,11 @@ function CollectorMunicipalityStep() {
       });
       window.sessionStorage.removeItem(ACCOUNT_TYPE_KEY);
       setCurrentTenantId(m.tenant_id);
+      // Drop any cached (empty) membership list so the waiting screen sees the new request.
+      qc.removeQueries({ queryKey: ["my-tenants"] });
+      qc.removeQueries({ queryKey: ["my-role"] });
       toast.success("Request sent — waiting for administrator approval");
-      nav({ to: "/pending", replace: true });
+      await nav({ to: "/pending", replace: true });
     } catch (e: any) {
       toast.error(e.message ?? "Could not submit your request");
     } finally {
