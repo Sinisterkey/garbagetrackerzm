@@ -9,7 +9,7 @@ import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
 import { listReports } from "@/lib/reports.functions";
 import { getDashboardStats } from "@/lib/analytics.functions";
 import { StatusBadge } from "@/components/StatusBadge";
-import { relativeTime } from "@/lib/format";
+import { fmtDate } from "@/lib/format";
 import {
   Building2,
   CalendarClock,
@@ -114,7 +114,7 @@ function Dashboard() {
                 <Link to="/reports/$reportId" params={{ reportId: r.id }} className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{r.title}</p>
                   <p className="truncate text-xs text-muted-foreground">
-                    {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {relativeTime(r.created_at)}
+                    {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {fmtDate(r.created_at)}
                   </p>
                 </Link>
                 <StatusBadge status={r.status} />
