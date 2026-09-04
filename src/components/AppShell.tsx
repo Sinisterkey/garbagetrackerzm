@@ -15,6 +15,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { TenantSwitcher } from "./TenantSwitcher";
 import { useCurrentTenant, useMyRole } from "@/hooks/use-current-tenant";
+import { useSession } from "@/hooks/use-session";
 import { cn } from "@/lib/utils";
 import { useEffect, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
