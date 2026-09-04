@@ -167,6 +167,14 @@ function Landing() {
           <span>Secure by default · RLS-isolated · Audit-logged</span>
         </div>
       </footer>
+
+      <div
+        className="fixed bottom-3 right-3 z-[10000] flex items-center gap-2 rounded-lg bg-foreground/75 px-3 py-2 text-background shadow-lg backdrop-blur-sm"
+        aria-hidden="true"
+      >
+        <BrandMark className="h-5 w-5" />
+        <span className="text-xs font-medium tracking-tight">Garbage Tracker</span>
+      </div>
     </div>
   );
 }
