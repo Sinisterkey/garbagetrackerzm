@@ -13,11 +13,34 @@ export const listMyTenants = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data, error } = await context.supabase
       .from("tenant_members")
-      .select(`role, active, status, tenant:tenants(${TENANT_COLS})`)
+      .select(`role, active, status, tenant_id, tenant:tenants(${TENANT_COLS})`)
       .eq("user_id", context.userId)
       .eq("active", true);
     if (error) throw new Error(error.message);
-    const rows = (data ?? []) as any[];
+    let rows = (data ?? []) as any[];
+
+    // Pending members cannot read the tenant row yet (RLS only admits approved
+    // members), so fill in the basics from the public directory.
+    if (rows.some((r) => !r.tenant)) {
+      const { data: dir } = await (context.supabase as any).rpc("list_tenant_directory");
+      const byId = new Map(((dir ?? []) as any[]).map((t) => [t.id, t]));
+      rows = rows.map((r) => {
+        if (r.tenant) return r;
+        const t = byId.get(r.tenant_id);
+        return {
+          ...r,
+          tenant: {
+            id: r.tenant_id,
+            name: t?.name ?? "Municipality",
+            slug: t?.slug ?? "",
+            logo_path: null,
+            center_lat: 0,
+            center_lng: 0,
+            default_zoom: 12,
+          },
+        };
+      });
+    }
 
     const { data: superRow } = await context.supabase
       .from("super_admins")
