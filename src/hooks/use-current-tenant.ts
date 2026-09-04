@@ -78,6 +78,9 @@ export function useMyRole(tenantId: string | null | undefined) {
   return useQuery({
     queryKey: ["my-role", tenantId],
     enabled: !!tenantId,
-    queryFn: () => fn({ data: { tenantId: tenantId! } }) as Promise<AppRole | null>,
+    queryFn: () => {
+      if (!tenantId) return Promise.resolve(null);
+      return fn({ data: { tenantId } }) as Promise<AppRole | null>;
+    },
   });
 }
