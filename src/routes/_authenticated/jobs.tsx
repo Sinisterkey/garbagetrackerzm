@@ -10,7 +10,7 @@ import { useCurrentTenant } from "@/hooks/use-current-tenant";
 import { listReports } from "@/lib/reports.functions";
 import { claimReport } from "@/lib/assignments.functions";
 import { pingLocation } from "@/lib/collectors.functions";
-import { relativeTime } from "@/lib/format";
+import { fmtDate } from "@/lib/format";
 import { Truck, Inbox } from "lucide-react";
 import { toast } from "sonner";
 
@@ -95,7 +95,7 @@ function JobsPage() {
                 >
                   <p className="truncate font-medium">{r.title}</p>
                   <p className="truncate text-xs text-muted-foreground">
-                    {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {relativeTime(r.created_at)}
+                    {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {fmtDate(r.created_at)}
                   </p>
                 </Link>
                 <StatusBadge status={r.status} />
@@ -120,7 +120,7 @@ function JobsPage() {
                   <Link to="/reports/$reportId" params={{ reportId: r.id }} className="min-w-0 flex-1">
                     <p className="truncate font-medium">{r.title}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {relativeTime(r.created_at)}
+                      {r.address ?? `${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`} · {fmtDate(r.created_at)}
                     </p>
                   </Link>
                   {r.urgent && (
