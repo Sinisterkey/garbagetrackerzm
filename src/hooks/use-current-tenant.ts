@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { listMyTenants, myRoleIn } from "@/lib/tenants.functions";
+import { amIPlatformAdmin, listMyTenants, myRoleIn } from "@/lib/tenants.functions";
 import { getCurrentTenantId, setCurrentTenantId } from "@/lib/current-tenant";
 import type { AppRole } from "@/lib/rbac";
+
+export type MembershipStatus = "pending" | "approved" | "rejected";
 
 export type TenantMembership = {
   role: AppRole;
   active: boolean;
+  status: MembershipStatus;
   tenant: {
     id: string;
     name: string;
@@ -28,12 +31,27 @@ export function useMyTenants() {
   });
 }
 
+export function usePlatformAdmin() {
+  const fn = useServerFn(amIPlatformAdmin);
+  return useQuery({
+    queryKey: ["platform-admin"],
+    queryFn: () => fn({}) as Promise<boolean>,
+    staleTime: 60_000,
+  });
+}
+
+/**
+ * Current tenant = one of the caller's *approved* memberships.
+ * Pending memberships (collectors awaiting approval) are exposed separately.
+ */
 export function useCurrentTenant() {
-  const { data: memberships, isLoading } = useMyTenants();
+  const { data: all, isLoading } = useMyTenants();
+  const memberships = (all ?? []).filter((m) => m.status === "approved");
+  const pending = (all ?? []).filter((m) => m.status === "pending");
   const [tenantId, setTenantIdState] = useState<string | null>(() => getCurrentTenantId());
 
   useEffect(() => {
-    if (!memberships || memberships.length === 0) return;
+    if (memberships.length === 0) return;
     const stored = getCurrentTenantId();
     const stillValid = stored && memberships.some((m) => m.tenant.id === stored);
     if (!stillValid) {
@@ -43,15 +61,16 @@ export function useCurrentTenant() {
     } else if (stored !== tenantId) {
       setTenantIdState(stored);
     }
-  }, [memberships, tenantId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, tenantId]);
 
   const setTenant = useCallback((id: string) => {
     setCurrentTenantId(id);
     setTenantIdState(id);
   }, []);
 
-  const current = memberships?.find((m) => m.tenant.id === tenantId) ?? null;
-  return { memberships: memberships ?? [], tenantId, setTenant, current, loading: isLoading };
+  const current = memberships.find((m) => m.tenant.id === tenantId) ?? null;
+  return { memberships, pending, tenantId, setTenant, current, loading: isLoading };
 }
 
 export function useMyRole(tenantId: string | null | undefined) {

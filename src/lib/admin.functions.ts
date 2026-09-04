@@ -25,7 +25,7 @@ export const listTenantMembers = createServerFn({ method: "POST" })
     return (members ?? []).map((m) => ({ ...m, profile: byId.get(m.user_id) ?? null }));
   });
 
-/** Grant a role to a user (admin only). Idempotent. */
+/** Grant a role to a user (admin only). Idempotent; assigned members are approved immediately. */
 export const grantRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) =>
@@ -33,7 +33,7 @@ export const grantRole = createServerFn({ method: "POST" })
       .object({
         tenantId,
         userId: z.string().uuid(),
-        role: z.enum(["resident", "collector", "supervisor", "administrator"]),
+        role: z.enum(["resident", "collector"]),
       })
       .parse(d),
   )
@@ -41,9 +41,48 @@ export const grantRole = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("tenant_members")
       .upsert(
-        { tenant_id: data.tenantId, user_id: data.userId, role: data.role, active: true },
+        {
+          tenant_id: data.tenantId,
+          user_id: data.userId,
+          role: data.role,
+          active: true,
+          status: "approved",
+          approved_by: context.userId,
+          approved_at: new Date().toISOString(),
+        },
         { onConflict: "tenant_id,user_id,role" },
       );
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Pending collector requests across all municipalities (platform admin only). */
+export const listPendingCollectors = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await (context.supabase as any).rpc("list_pending_collectors");
+    if (error) throw new Error(error.message);
+    return (data ?? []) as {
+      id: string;
+      user_id: string;
+      tenant_id: string;
+      tenant_name: string;
+      full_name: string | null;
+      email: string | null;
+      phone: string | null;
+      created_at: string;
+    }[];
+  });
+
+/** Approve or reject a pending collector (platform admin only). */
+export const reviewCollector = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ memberId: z.string().uuid(), approve: z.boolean() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { error } = await (context.supabase as any).rpc("review_collector", {
+      _member_id: data.memberId,
+      _approve: data.approve,
+    });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
