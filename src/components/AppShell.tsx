@@ -124,7 +124,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <TenantSwitcher />
           </div>
           <div className="hidden text-sm text-muted-foreground md:block">
-            {current ? current.tenant.name : "No municipality selected"}
+            {current?.role === "super_admin"
+              ? `Platform Admin · all municipalities (viewing ${current.tenant.name})`
+              : current
+                ? current.tenant.name
+                : "No municipality selected"}
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
